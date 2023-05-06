@@ -4,6 +4,8 @@
 #include <cmath>
 using namespace std;
 
+const float v = 200; // distance_between_viewer_and_screen
+
 struct Coordinates {
   float x;
   float y;
@@ -13,39 +15,46 @@ struct Coordinates {
 };
 
 class Cube {
-	vector<Coordinates> cube[6];
+  vector<Coordinates> cube[6]; // stores coordinates of all points
   float distance_from_screen; // depth
   float radius; // half edge length
-  float distance_between_viewer_and_screen;
 	public:
-		Cube(float, float, float);
+		Cube(float, float);
 		void spin(float, float, float);
 };
 
 void Cube::spin(float x, float y, float z) {
   float n = distance_from_screen;
   float r = radius;
-  float v = distance_between_viewer_and_screen;
   while (1) {
     float zbuffer[33][144];
     char display[33][144];
+    // initialize display and z-buffer
     for (int j = 0; j < 33; j++) {
       for (int i = 0; i < 144; i++) {
         display[j][i] = ' ';
         zbuffer[j][i] = 0;
       }
     }
+    
     int face_area = (2 * r + 1) * (2 * r + 1);
+
+    // compute the position on the screen
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < face_area; j++) {
-        int horizontal = 72 + round(cube[i].at(j).x * v / (cube[i].at(j).z + n + r + v));
-        int vertical = 16 - round(cube[i].at(j).y * v / (cube[i].at(j).z + n + r + v) / 2);
-        if (!zbuffer[vertical][horizontal]) {
-          zbuffer[vertical][horizontal] = cube[i].at(j).z;
-          display[vertical][horizontal] = cube[i].at(j).c;
-        } else if (zbuffer[vertical][horizontal] > cube[i].at(j).z) {
-          zbuffer[vertical][horizontal] = cube[i].at(j).z;
-          display[vertical][horizontal] = cube[i].at(j).c;
+        int horizontal = 72 + round(cube[i].at(j).x * v / (cube[i].at(j).z + n + v + r));
+        int vertical = 16 - round(cube[i].at(j).y * v / (cube[i].at(j).z + n + v + r) / 2.09);
+        // divide by the ratio of height and width of a character in the terminal so it looks like a cube
+
+        // only show pixels that are in the display range
+        if (horizontal <= 143 && horizontal >= 0 && vertical >= 0 && vertical <= 32) {
+          if (!zbuffer[vertical][horizontal]) {
+            zbuffer[vertical][horizontal] = cube[i].at(j).z;
+            display[vertical][horizontal] = cube[i].at(j).c;
+          } else if (zbuffer[vertical][horizontal] > cube[i].at(j).z) {
+            zbuffer[vertical][horizontal] = cube[i].at(j).z;
+            display[vertical][horizontal] = cube[i].at(j).c;
+          }
         }
       }
     }
@@ -80,38 +89,36 @@ void Cube::spin(float x, float y, float z) {
         cube[j].at(i).z = old_y * sin(z) + old_z * cos(z);
       }
     }
-    usleep(30000);
+    usleep(1600);
   }
 }
 
-Cube::Cube(float n, float r, float v):
-  distance_from_screen{n}, radius{r}, distance_between_viewer_and_screen{v} {
-  // constructor initializes coordinates of all surface pixels
+// constructor initializes coordinates of all surface pixels
+Cube::Cube(float n, float r): distance_from_screen{n}, radius{r} {
   // assign each face a char so no need for luminance
   for (float i = -r; i <= r; i++) { // i and j must range from -r to r
     for (float j = -r; j <= r; j++) {
-      cube[0].emplace_back(Coordinates{j, i, -r, '='}); // front
+      cube[0].emplace_back(Coordinates{j, i, -r, '$'}); // front
     }
     for (float j = -r; j <= r; j++) {
-      cube[1].emplace_back(Coordinates{j, i, r, '+'}); // back
+      cube[1].emplace_back(Coordinates{j, i, r, '#'}); // back
     }
     for (float j = -r; j <= r; j++) {
-      cube[2].emplace_back(Coordinates{j, r, i, '!'}); // top
+      cube[2].emplace_back(Coordinates{j, r, i, '*'}); // top
     }
     for (float j = -r; j <= r; j++) {
-      cube[3].emplace_back(Coordinates{j, -r, i, '/'}); // bottom
+      cube[3].emplace_back(Coordinates{j, -r, i, '.'}); // bottom
     }
     for (float j = -r; j <= r; j++) {
-      cube[4].emplace_back(Coordinates{-r, j, i, '-'}); // left
+      cube[4].emplace_back(Coordinates{-r, j, i, '='}); // left
     }
     for (float j = -r; j <= r; j++) {
-      cube[5].emplace_back(Coordinates{r, j, i, '~'}); // right
+      cube[5].emplace_back(Coordinates{r, j, i, ';'}); // right
     }
   }
 }
 
 int main(void) {
-  float pi = 3.1415926;
-  Cube c{40, 40, 20};
-  c.spin(-pi / 40, pi / 20, pi / 30);
+  Cube c{25, 20};
+  c.spin(0.01, 0.01, 0.02);
 }
