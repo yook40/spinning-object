@@ -1,14 +1,14 @@
 Object rotation
 
-rotation matrices are obtained by trig identity (the angle in one matrix and those in the other two are independent):
+rotation matrices are obtained by trig identity:
 
 	/* about y-axis:
 
-     cos(phi)     0    sin(phi)
+     cos(theta)     0    sin(theta)
      
-        0         1       0
+        0           1         0
         
-    -sin(phi)     0    cos(phi)
+    -sin(theta)     0    cos(theta)
 
   */
 
@@ -24,11 +24,11 @@ rotation matrices are obtained by trig identity (the angle in one matrix and tho
 
   /* about z-axis:
 
-        cos(phi)  sin(phi)    0
+        cos(omega)  sin(omega)    0
 
-       -sin(phi)  cos(phi)    0
+       -sin(omega)  cos(omega)    0
 
-           0         0        1
+            0           0         1
 
   */
 
