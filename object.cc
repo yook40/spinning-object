@@ -28,7 +28,7 @@ void Object::spin(float x, float y, float z) {
     for (auto &pixel:object) {
       int horizontal = 109 + round(pixel.x * v / (pixel.z + n + v + r));
       int vertical = 25 - round(pixel.y * v / (pixel.z + n + v + r) / 2.09);
-      // divide by the ratio of height and width of a character in the terminal so the object does not get stretched
+      // divide by the ratio of height to width of a character in the terminal so the object does not get stretched
 
       // compute luminance
       float lum = pixel.norm_x * light_source[0] + pixel.norm_y * light_source[1] + pixel.norm_z * light_source[2];
@@ -60,39 +60,28 @@ void Object::spin(float x, float y, float z) {
     // pixel after rotation with type float
     for (auto &pixel:object) {
       float old_x = pixel.x;
-      float old_y = pixel.y;
-      float old_z = pixel.z;
       float old_norm_x = pixel.norm_x;
-      float old_norm_y = pixel.norm_y;
-      float old_norm_z = pixel.norm_z;
-
       // rotation about y-axis:
-      pixel.x = old_x * cos(x) - old_z * sin(x);
-      pixel.z = old_x * sin(x) + old_z * cos(x);
-      pixel.norm_x = old_norm_x * cos(x) - old_norm_z * sin(x);
-      pixel.norm_z = old_norm_x * sin(x) + old_norm_z * cos(x);
+      pixel.x = old_x * cos(x) - pixel.z * sin(x);
+      pixel.z = old_x * sin(x) + pixel.z * cos(x);
+      pixel.norm_x = old_norm_x * cos(x) - pixel.norm_z * sin(x);
+      pixel.norm_z = old_norm_x * sin(x) + pixel.norm_z * cos(x);
 
-      // rotation about z-axis:
       old_x = pixel.x;
-      old_y = pixel.y;
       old_norm_x = pixel.norm_x;
-      old_norm_y = pixel.norm_y;
+      // rotation about z-axis:
+      pixel.x = old_x * cos(y) - pixel.y * sin(y);
+      pixel.y = old_x * sin(y) + pixel.y * cos(y);
+      pixel.norm_x = old_norm_x * cos(y) - pixel.norm_y * sin(y);
+      pixel.norm_y = old_norm_x * sin(y) + pixel.norm_y * cos(y);
 
-      pixel.x = old_x * cos(y) - old_y * sin(y);
-      pixel.y = old_x * sin(y) + old_y * cos(y);
-      pixel.norm_x = old_norm_x * cos(y) - old_norm_y * sin(y);
-      pixel.norm_y = old_norm_x * sin(y) + old_norm_y * cos(y);
-
+      float old_y = pixel.y;
+      float old_norm_y = pixel.norm_y;
       // rotation about x-axis:
-      old_y = pixel.y;
-      old_z = pixel.z;
-      old_norm_y = pixel.norm_y;
-      old_norm_z = pixel.norm_z;
-
-      pixel.y = old_y * cos(z) - old_z * sin(z);
-      pixel.z = old_y * sin(z) + old_z * cos(z);
-      pixel.norm_y = old_norm_y * cos(z) - old_norm_z * sin(z);
-      pixel.norm_z = old_norm_y * sin(z) + old_norm_z * cos(z);
+      pixel.y = old_y * cos(z) - pixel.z * sin(z);
+      pixel.z = old_y * sin(z) + pixel.z * cos(z);
+      pixel.norm_y = old_norm_y * cos(z) - pixel.norm_z * sin(z);
+      pixel.norm_z = old_norm_y * sin(z) + pixel.norm_z * cos(z);
     }
   }
 }
