@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cmath>
-#include <unistd.h>
 #include "object.h"
 using namespace std;
 
