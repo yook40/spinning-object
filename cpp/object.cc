@@ -9,11 +9,11 @@ const float v = 200; // distance_between_viewer_and_screen
 
 const string luminance = ".,-~:;=!*#$@"; // from dimmest to brightest
 
-const int light_source[3] = {0, 0, -1};
+const int light_source[3] = {0, 1, -1};
 
 Object::Object(float r): r{r} {}
 
-void Object::spin(float x, float y, float z) {
+void Object::spin(float a, float b, float c) {
   while (1) {
     float zbuffer[50][218];
     char display[50][218];
@@ -62,26 +62,26 @@ void Object::spin(float x, float y, float z) {
       float old_x = pixel.x;
       float old_norm_x = pixel.norm_x;
       // rotation about y-axis:
-      pixel.x = old_x * cos(x) - pixel.z * sin(x);
-      pixel.z = old_x * sin(x) + pixel.z * cos(x);
-      pixel.norm_x = old_norm_x * cos(x) - pixel.norm_z * sin(x);
-      pixel.norm_z = old_norm_x * sin(x) + pixel.norm_z * cos(x);
+      pixel.x = old_x * cos(a) - pixel.z * sin(a);
+      pixel.z = old_x * sin(a) + pixel.z * cos(a);
+      pixel.norm_x = old_norm_x * cos(a) - pixel.norm_z * sin(a);
+      pixel.norm_z = old_norm_x * sin(a) + pixel.norm_z * cos(a);
 
       old_x = pixel.x;
       old_norm_x = pixel.norm_x;
       // rotation about z-axis:
-      pixel.x = old_x * cos(y) - pixel.y * sin(y);
-      pixel.y = old_x * sin(y) + pixel.y * cos(y);
-      pixel.norm_x = old_norm_x * cos(y) - pixel.norm_y * sin(y);
-      pixel.norm_y = old_norm_x * sin(y) + pixel.norm_y * cos(y);
+      pixel.x = old_x * cos(b) - pixel.y * sin(b);
+      pixel.y = old_x * sin(b) + pixel.y * cos(b);
+      pixel.norm_x = old_norm_x * cos(b) - pixel.norm_y * sin(b);
+      pixel.norm_y = old_norm_x * sin(b) + pixel.norm_y * cos(b);
 
       float old_y = pixel.y;
       float old_norm_y = pixel.norm_y;
       // rotation about x-axis:
-      pixel.y = old_y * cos(z) - pixel.z * sin(z);
-      pixel.z = old_y * sin(z) + pixel.z * cos(z);
-      pixel.norm_y = old_norm_y * cos(z) - pixel.norm_z * sin(z);
-      pixel.norm_z = old_norm_y * sin(z) + pixel.norm_z * cos(z);
+      pixel.y = old_y * cos(c) - pixel.z * sin(c);
+      pixel.z = old_y * sin(c) + pixel.z * cos(c);
+      pixel.norm_y = old_norm_y * cos(c) - pixel.norm_z * sin(c);
+      pixel.norm_z = old_norm_y * sin(c) + pixel.norm_z * cos(c);
     }
   }
 }
