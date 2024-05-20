@@ -1,3 +1,6 @@
+### Important:
+Please zoom out the terminal window to make sure the animation is displayed properly!
+
 Object rotation
 
 rotation matrices are obtained by trig identity:
