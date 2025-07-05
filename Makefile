@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -g -Wall -MMD
+CXXFLAGS = -std=c++23 -g -Wall -MMD -Wall
 SOURCES = $(wildcard *.cc)
 OBJECTS = ${SOURCES:.cc=.o}
 DEPENDS = ${OBJECTS:.o=.d}
