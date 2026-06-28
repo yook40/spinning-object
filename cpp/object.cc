@@ -3,15 +3,18 @@
 #include "object.h"
 using namespace std;
 
-const float n = 4; // depth / distance_from_screen
+const float SCREEN_DIST = 4.0f; // depth / distance_from_screen
 
-const float v = 200; // distance_between_viewer_and_screen
+const float FOCAL_LENGTH = 200.0f; // distance between viewer and screen
+
+const float FONT_HEIGHT_WIDTH_RATIO = 2.09f;
 
 const string luminance = ".,-~:;=!*#$@"; // from dimmest to brightest
 
 const int light_source[3] = {0, 1, -1};
 
-Object::Object(float r): r{r} {}
+Object::Object(float radius): radius{radius} {}
+
 
 void Object::spin(float a, float b, float c) {
   while (1) {
@@ -25,30 +28,31 @@ void Object::spin(float a, float b, float c) {
       }
     }
     // compute the position on the screen
-    for (auto &pixel:object) {
-      int horizontal = 109 + round(pixel.x * v / (pixel.z + n + v + r));
-      int vertical = 25 - round(pixel.y * v / (pixel.z + n + v + r) / 2.09);
+    for (auto &pixel : object) {
+      int horizontal = 109 + round(pixel.x * FOCAL_LENGTH / (pixel.z + SCREEN_DIST + FOCAL_LENGTH + radius));
+      int vertical = 25 - round(pixel.y * FOCAL_LENGTH / (pixel.z + SCREEN_DIST + FOCAL_LENGTH + radius) / FONT_HEIGHT_WIDTH_RATIO);
       // divide by the ratio of height to width of a character in the terminal so the object does not get stretched
 
       // compute luminance
       float lum = pixel.norm_x * light_source[0] + pixel.norm_y * light_source[1] + pixel.norm_z * light_source[2];
+      float light_magnitude = sqrt(light_source[0] * light_source[0] + light_source[1] * light_source[1] + light_source[2] * light_source[2]);
+      float brightness = max(0.0f, lum / light_magnitude);
 
-      if (lum >= 0) {
-        // only show pixels that are in the display range and points towards the viewer
-        int lum_index = round(lum * (luminance.length() - 1) / sqrt(light_source[0] * light_source[0] +
-                        light_source[1] * light_source[1] + light_source[2] * light_source[2]));
-        if (horizontal <= 217 && horizontal >= 0 && vertical >= 0 && vertical <= 49) {
-          if (!zbuffer[vertical][horizontal]) {
-            zbuffer[vertical][horizontal] = pixel.z;
-            display[vertical][horizontal] = luminance[lum_index];
-          } else if (zbuffer[vertical][horizontal] > pixel.z) {
-            zbuffer[vertical][horizontal] = pixel.z;
-            display[vertical][horizontal] = luminance[lum_index];
-          }
+      int lum_index = round((luminance.length() - 1) * brightness);
+      if (horizontal < 218 && horizontal >= 0 && vertical >= 0 && vertical < 50) {
+        if (!zbuffer[vertical][horizontal]) {
+          zbuffer[vertical][horizontal] = pixel.z;
+          display[vertical][horizontal] = luminance[lum_index];
+        } else if (zbuffer[vertical][horizontal] > pixel.z) {
+          zbuffer[vertical][horizontal] = pixel.z;
+          display[vertical][horizontal] = luminance[lum_index];
         }
       }
     }
-    cout << "\x1b[H";
+
+    // clear the screen, reset the cursor to the top-left corner
+    system("clear");
+
     for (int i = 0; i < 50; i++) {
       for (int j = 0; j < 218; j++) {
         cout << display[i][j];
@@ -58,14 +62,14 @@ void Object::spin(float a, float b, float c) {
 
     // compute and store the accurate coordinates and the surface normal of each
     // pixel after rotation with type float
-    for (auto &pixel:object) {
+    for (auto &pixel : object) {
       float old_x = pixel.x;
       float old_norm_x = pixel.norm_x;
       // rotation about y-axis:
-      pixel.x = old_x * cos(a) - pixel.z * sin(a);
-      pixel.z = old_x * sin(a) + pixel.z * cos(a);
-      pixel.norm_x = old_norm_x * cos(a) - pixel.norm_z * sin(a);
-      pixel.norm_z = old_norm_x * sin(a) + pixel.norm_z * cos(a);
+      pixel.x =  old_x * cos(a) + pixel.z * sin(a);
+      pixel.z = -old_x * sin(a) + pixel.z * cos(a);
+      pixel.norm_x =  old_norm_x * cos(a) + pixel.norm_z * sin(a);
+      pixel.norm_z = -old_norm_x * sin(a) + pixel.norm_z * cos(a);
 
       old_x = pixel.x;
       old_norm_x = pixel.norm_x;

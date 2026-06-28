@@ -4,5 +4,5 @@ extern const float pi;
 
 class Donut: public Object {
   public:
-  Donut(float, float);
+  Donut(float r1, float r2);
 };

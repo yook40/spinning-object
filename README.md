@@ -3,36 +3,33 @@ Please zoom out the terminal window to make sure the animation is displayed prop
 
 Object rotation
 
-rotation matrices are obtained by trig identity:
+rotation matrices are obtained by trig identities:
 
-	/* about y-axis:
+- about y-axis:
 
-     cos(theta)     0    sin(theta)
+       cos(theta)     0    sin(theta)
      
-        0           1         0
+           0          1         0
         
-    -sin(theta)     0    cos(theta)
+      -sin(theta)     0    cos(theta)
 
-  */
 
-  /* about x-axis:
+- about x-axis:
 
-        1         0           0
+           1         0           0
 
-        0      cos(phi)    sin(phi)
+           0      cos(phi)   -sin(phi)
 
-        0     -sin(phi)    cos(phi)
+           0      sin(phi)    cos(phi)
 
-  */
 
-  /* about z-axis:
 
-        cos(omega)  sin(omega)    0
+- about z-axis:
 
-       -sin(omega)  cos(omega)    0
+        cos(omega) -sin(omega)    0
+
+        sin(omega)  cos(omega)    0
 
             0           0         1
-
-  */
 
 

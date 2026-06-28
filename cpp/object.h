@@ -15,9 +15,9 @@ extern const int light_source[3];
 class Object {
   protected:
   std::vector<Coordinates> object;
-  float r; // radius
+  float radius; // radius
   public:
-  Object(float r);
+  Object(float radius);
   void spin(float x, float y, float z);
 };
 #endif
